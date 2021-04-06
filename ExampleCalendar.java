@@ -1,8 +1,7 @@
 import java.util.*;
 
 public class ExampleCalendar {
-    //Hashmap that stores key-pair values for a time slot. The key would be a partiuclar time slot
-    //in the dat and the value would be a boolean of weather there is an event object in there or not.
+
     final int timeMin = 6000;
     final int timeMax = 2200; 
     Map<Integer, Boolean> hashmap = new HashMap<Integer, Boolean>();
