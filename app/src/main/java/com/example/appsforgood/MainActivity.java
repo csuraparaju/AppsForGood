@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.api.client.auth.oauth2.Credential;
@@ -40,32 +42,38 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
     private static final String CREDENTIALS_FILE_PATH = "\\app\\src\\main\\java\\com\\example\\appsforgood\\credentials.json";
-    private static final int RC_SIGN_IN = 6767;
-    private GoogleSignInClient mGoogleSignInClient;
 
-    @Override
+    private static final int RQ_SIGN_IN = 8787;
+    private GoogleSignInAccount account = null;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        Intent intent = new Intent(this, SignIn.class);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
+        if(account == null) {
+            startActivityForResult(intent, RQ_SIGN_IN);
+        }
+    }
+
+    Calendar getCalendar() throws IOException, GeneralSecurityException {
+        final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
                 .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        return service;
     }
 
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
 
-        InputStream in = new FileInputStream(System.getProperty("user.dir")+CREDENTIALS_FILE_PATH);
+        InputStream in = new FileInputStream(/*System.getProperty("user.dir")+*/CREDENTIALS_FILE_PATH);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + System.getProperty("user.dir")+CREDENTIALS_FILE_PATH);
         }
@@ -84,10 +92,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void displayNextEvent(View v) throws IOException, GeneralSecurityException{
         Toast.makeText(getApplicationContext(),"Displaying Next Event",Toast.LENGTH_SHORT).show();
 
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+        Calendar service = getCalendar();
 
         DateTime now = new DateTime(System.currentTimeMillis());
         Events events = service.events().list("primary")
@@ -103,25 +108,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
         eventText.setText(eventName);
     }
 
-    Calendar getCalendar() throws IOException, GeneralSecurityException {
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-        return service;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case (RQ_SIGN_IN) : {
+                if (resultCode == Activity.RESULT_OK) {
+                    account = (GoogleSignInAccount) data.getParcelableExtra("account");
+                    Toast.makeText(getApplicationContext(),account.getEmail(),Toast.LENGTH_SHORT).show();
+                }
                 break;
+            }
         }
-    }
-
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 }
