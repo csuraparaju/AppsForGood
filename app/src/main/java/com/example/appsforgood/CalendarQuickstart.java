@@ -92,5 +92,7 @@ public class CalendarQuickstart {
         event = service.events().insert(calendarId, event).execute();
         System.out.printf("Event created: %s\n", event.getHtmlLink());
 
+        System.out.println(event);
+
     }
 }
