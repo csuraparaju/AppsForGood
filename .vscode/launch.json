@@ -5,6 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch DriverCode",
+            "request": "launch",
+            "mainClass": "DriverCode",
+            "projectName": "JavaClassStructureTest_49a6cdb1"
+        },
+        {
+            "type": "java",
+            "name": "Launch MainClassStruct",
+            "request": "launch",
+            "mainClass": "MainClassStruct",
+            "projectName": "JavaClassStructureTest_49a6cdb1"
+        },
+        {
+            "type": "java",
+            "name": "Launch ExampleCalendar",
+            "request": "launch",
+            "mainClass": "ExampleCalendar",
+            "projectName": "JavaClassStructureTest_49a6cdb1"
+        },
+        {
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
