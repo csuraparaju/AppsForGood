@@ -16,8 +16,8 @@ public class main {
     static ArrayList<LocalDateTime> freeSlots = new ArrayList<LocalDateTime>();
 
     public main(){
-        for(int i = 0; i < 7;i++){
-            allEvents.add(new Event(6,10));
+        for(int i = 0; i < 15;i++){
+            allEvents.add(new Event(0,23));
         }
     }
     
@@ -66,15 +66,14 @@ public class main {
 
     //Simple bubble sort algorithm to sort objects in the arraylist based on their time
     private static void sort(ArrayList<Event> in){
-        ArrayList<Event> a = in;
-        int n = a.size();
+        int n = in.size();
         boolean sorted = false;
         
         while(!sorted){
             sorted = true;
             for(int i = 0; i < n-1; i++){
-                if(compare(a.get(i),a.get(i+1)) == 1){
-                    Collections.swap(a,i,i+1);
+                if(compare(in.get(i),in.get(i+1)) == 1){
+                    Collections.swap(in,i,i+1);
                     sorted = false;
                 }
             }
@@ -92,8 +91,8 @@ public class main {
             }
             long[] timeBetween = getTimeBetween(allEvents.get(i).getDateTime(),allEvents.get(i+1).getDateTime());
             if(timeBetween[1] > DURATION_OF_WORKOUT){
-                LocalDate ld = allEvents.get(i).getDateTime().plusMinutes(10).toLocalDate();
-                LocalTime lt = allEvents.get(i).getDateTime().plusMinutes(10).toLocalTime();
+                LocalDate ld = allEvents.get(i).getDateTime().plusMinutes(5).toLocalDate();
+                LocalTime lt = allEvents.get(i).getDateTime().plusMinutes(5).toLocalTime();
                 LocalDateTime ldt = LocalDateTime.of(ld, lt);
                 freeSlots.add(ldt);
                 }
