@@ -63,23 +63,57 @@ import java.util.Scanner;
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
     private static final int RQ_SIGN_IN = 8787;
     private GoogleSignInAccount account = null;
+    
+    private Calendar calendar = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this, SignIn.class);
 
-        if(account == null) {
+        if(account == null) { // Starts SignIn activity in order to sign user in with Google
             startActivityForResult(intent, RQ_SIGN_IN);
         }
     }
 
+    /**
+     * Runs on "Display Next Event" button press, displays the next event on the user's calendar in the TextView above.
+     * @param v
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public void displayNextEvent(View v) throws IOException, GeneralSecurityException{
+
+        if(calendar == null) {
+            String authCode = account.getServerAuthCode();
+            calendar = getCalendar(getToken(authCode, "N3T1hB9SZbG92LIaXurmzFP9"));
+        }
+
+        DateTime now = new DateTime(System.currentTimeMillis());
+        EventCollector nextEventGetter = new EventCollector(calendar, now, "startTime", 1);
+
+        Thread collectorThread = new Thread(nextEventGetter);
+        collectorThread.setPriority(Thread.MAX_PRIORITY);
+        collectorThread.start();
+        Events events = nextEventGetter.getResults();
+
+        Thread.yield();
+        String eventName = events.getItems().get(0).getSummary();
+
+        TextView eventText = findViewById(R.id.NextEventText);
+        eventText.setText(eventName);
+    }
+
+    /**
+     * Gets the user's calendar via http request.
+     * @param accessToken a token that encodes the user's Google account information and authorization
+     * @return a Calendar object that stores the user's Google calendar.
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
     Calendar getCalendar(String accessToken) throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = new NetHttpTransport();
         Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, new GoogleCredential().setAccessToken(accessToken))
@@ -88,44 +122,42 @@ public class MainActivity extends AppCompatActivity {
         return service;
     }
 
-    /*private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        InputStream in = this.getResources().getAssets().open("credentials.json");
-        if (in == null) {
-            throw new FileNotFoundException("Resource not found: " + getApplicationContext().getFilesDir().getPath()+CREDENTIALS_FILE_PATH);
-        }
-
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setAccessType("offline")
+    /**
+     * Contacts Google servers to exchange the user's authorization code (extracted from their GoogleSignInAccount)
+     * for the user's access token.
+     * @param authCode
+     * @param clientSecret
+     * @return an access token that encodes the credentials necessary to access a user's google Calendar
+     */
+    public String getToken(String authCode, String clientSecret){
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add("grant_type", "authorization_code")
+                .add("client_id", "442942742888-lfen4d6s3srtbjp5ephh19jnc6qn49nq.apps.googleusercontent.com")
+                .add("client_secret", clientSecret)
+                .add("redirect_uri","")
+                .add("code", authCode)
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
 
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-    }*/
+        final Request request = new Request.Builder()
+                .url("https://www.googleapis.com/oauth2/v4/token")
+                .post(requestBody)
+                .build();
 
-    public void displayNextEvent(View v) throws IOException, GeneralSecurityException{
-        Toast.makeText(getApplicationContext(),"Displaying Next Event",Toast.LENGTH_SHORT).show();
+        AccessTokenGetter tokenGetter = new AccessTokenGetter();
+        client.newCall(request).enqueue(tokenGetter);
+        String accessToken = tokenGetter.getAccessToken();
 
-        String authCode = account.getServerAuthCode();
-
-        Calendar service = getCalendar(getToken(authCode,"N3T1hB9SZbG92LIaXurmzFP9"));
-
-        DateTime now = new DateTime(System.currentTimeMillis());
-        EventCollector nextEventGetter = new EventCollector(service, now, "startTime", 1);
-
-        Thread collectorThread = new Thread(nextEventGetter);
-        collectorThread.start();
-        Events events = nextEventGetter.getResults();
-
-        String eventName = events.getItems().get(0).getSummary();
-
-        TextView eventText = findViewById(R.id.NextEventText);
-        eventText.setText(eventName);
+        return accessToken;
     }
 
+    /**
+     * Collects the results of activities started by StartActivityForResult() in this activity. This currently collects the user's
+     * GoogleSignInAccount from the SignIn activity started in this activity's OnCreate().
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
@@ -138,30 +170,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    public String getToken(String authCode, String clientSecret){
-        OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = new FormEncodingBuilder()
-                .add("grant_type", "authorization_code")
-                .add("client_id", "442942742888-lfen4d6s3srtbjp5ephh19jnc6qn49nq.apps.googleusercontent.com")
-                .add("client_secret", clientSecret)
-                .add("redirect_uri","")
-                .add("code", authCode)
-                .build();
-        final Request request = new Request.Builder()
-                .url("https://www.googleapis.com/oauth2/v4/token")
-                .post(requestBody)
-                .build();
-        Log.i("hi", "Is this working?");
-
-        AccessTokenGetter tokenGetter = new AccessTokenGetter();
-        client.newCall(request).enqueue(tokenGetter);
-        String accessToken = tokenGetter.getAccessToken();
-
-        Log.i("hi", "access token: "+accessToken);
-
-        return accessToken;
-    }
-
 
 }

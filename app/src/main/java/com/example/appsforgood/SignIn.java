@@ -16,10 +16,13 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
+
+/**
+ * The activity that allows the user to sign-in to their Google account, opened upon app start if no Google account is found.
+ */
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_GOOGLE_SIGN_IN = 6767;
-    private static final int RC_SIGN_IN = 9797;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -38,7 +41,10 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-
+    /**
+     * Runs on-click of the sign-in button to run SignIn()
+     * @param v
+     */
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
@@ -47,36 +53,43 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    /**
+     * Starts a Google Sign in activity to allow the user to sign-in to google and provide Google calendar authorization
+     */
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
     }
 
+    /**
+     * Collects the result of the google sign in activity
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_GOOGLE_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task, requestCode);
+            handleSignInResult(task);
         }
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask, int requestCode) {
+    /**
+     * Parses the result of the google sign in activity to set the result of the SignIn activity to an intent containing
+     * a GoogleSignInAccount.
+     * @param completedTask data from the google SignIn activity
+     */
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-
             Intent output = new Intent();
             output.putExtra("account", account);
             setResult(RESULT_OK, output);
             finish();
 
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("ApiException", "signInResult:failed code=" + e.getStatusCode());
         }
     }
