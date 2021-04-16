@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">AppsForGood</string>
+    <string name="android_client_id">442942742888-dcfeip62mst2tbihrjhaubif9lbdtt0n.apps.googleusercontent.com</string>
+    <string name="web_client_id">442942742888-lfen4d6s3srtbjp5ephh19jnc6qn49nq.apps.googleusercontent.com</string>
 
     <string name="NextEventLabel">Next Event</string>
     <string name="NextEventButtonLabel">Display Next Event</string>

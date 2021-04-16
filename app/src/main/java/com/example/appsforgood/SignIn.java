@@ -13,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
@@ -29,7 +30,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestServerAuthCode(getString(R.string.web_client_id))
                 .requestEmail()
+                .requestScopes(new Scope("https://www.googleapis.com/auth/calendar"))
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
