@@ -6,31 +6,28 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch mainProcess",
+            "request": "launch",
+            "mainClass": "mainProcess",
+            "projectName": "JavaClassStructureTest_49a6cdb1"
+        },
+        {
+            "type": "java",
+            "name": "Launch Event",
+            "request": "launch",
+            "mainClass": "Event"
+        },
+        {
+            "type": "java",
             "name": "Launch DriverCode",
             "request": "launch",
-            "mainClass": "DriverCode",
-            "projectName": "JavaClassStructureTest_49a6cdb1"
+            "mainClass": "DriverCode"
         },
         {
             "type": "java",
-            "name": "Launch MainClassStruct",
+            "name": "Launch main",
             "request": "launch",
-            "mainClass": "MainClassStruct",
-            "projectName": "JavaClassStructureTest_49a6cdb1"
-        },
-        {
-            "type": "java",
-            "name": "Launch ExampleCalendar",
-            "request": "launch",
-            "mainClass": "ExampleCalendar",
-            "projectName": "JavaClassStructureTest_49a6cdb1"
-        },
-        {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
+            "mainClass": "main"
         }
     ]
 }
