@@ -16,18 +16,6 @@
             "name": "Launch Event",
             "request": "launch",
             "mainClass": "Event"
-        },
-        {
-            "type": "java",
-            "name": "Launch DriverCode",
-            "request": "launch",
-            "mainClass": "DriverCode"
-        },
-        {
-            "type": "java",
-            "name": "Launch main",
-            "request": "launch",
-            "mainClass": "main"
         }
     ]
 }
