@@ -55,10 +55,8 @@ public class EventCollector implements Runnable{
      * Gets the results of run() in the form of an Events object
      * @return a list of events on the user's calendar generated using the parameters determined in the constructor
      */
-    public Events getResults() throws InterruptedException {
-
+    public Events getResults(){
         while(events == null){ // waiting for the results of run()
-            Thread.currentThread().sleep(500);
         }
         return events;
     }

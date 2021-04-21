@@ -96,11 +96,9 @@ public class MainActivity extends AppCompatActivity {
         EventCollector nextEventGetter = new EventCollector(calendar, now, "startTime", 1);
 
         Thread collectorThread = new Thread(nextEventGetter);
-        collectorThread.setPriority(Thread.MAX_PRIORITY);
         collectorThread.start();
         Events events = nextEventGetter.getResults();
 
-        Thread.yield();
         String eventName = events.getItems().get(0).getSummary();
 
         TextView eventText = findViewById(R.id.NextEventText);
