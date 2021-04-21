@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public void displayNextEvent(View v) throws IOException, GeneralSecurityException{
+    public void displayNextEvent(View v) throws IOException, GeneralSecurityException, InterruptedException {
 
         if(calendar == null) {
             String authCode = account.getServerAuthCode();
