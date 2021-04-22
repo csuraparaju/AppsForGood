@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         Thread collectorThread = new Thread(nextEventGetter);
         collectorThread.start();
+        collectorThread.join();
         Events events = nextEventGetter.getResults();
 
         String eventName = events.getItems().get(0).getSummary();
@@ -168,5 +169,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
