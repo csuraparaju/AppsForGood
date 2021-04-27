@@ -13,25 +13,35 @@ import java.io.IOException;
  * as Android does not permit web requests on main threads.
  */
 public class EventCollector implements Runnable{
+    public static final int START_END = 0;
+    public static final int START_AMOUNT = 1;
+
+    private int type;
     private Calendar calendar;
     private DateTime startTime;
+    private DateTime endTime;
     private String orderBy;
     private int maxResults;
 
     private Events events = null;
 
-    /**
-     *
-     * @param calendar the calendar object to read from
-     * @param startTime the start time of reading
-     * @param orderBy a key string that determines the ordering of events in results
-     * @param maxResults the maximum number of results that will be taken from the user's calendar
-     */
-    public EventCollector(Calendar calendar, DateTime startTime, String orderBy, int maxResults){
-        this.calendar = calendar;
-        this.startTime = startTime;
-        this.orderBy = orderBy;
-        this.maxResults = maxResults;
+    public static class Builder{
+        public EventCollector collector;
+
+        public Builder(Calendar calendar, int type){
+            collector = new EventCollector();
+            collector.calendar = calendar;
+            collector.type = type;
+        }
+
+        public Builder setStart(DateTime startTime){ collector.startTime = startTime; return this;}
+        public Builder setEnd(DateTime endTime){ collector.endTime = endTime; return this;}
+        public Builder setOrderBy(String orderBy){ collector.orderBy = orderBy; return this;}
+        public Builder setMaxResults(int maxResults){ collector.maxResults = maxResults; return this;}
+
+        public EventCollector build() {
+            return collector;
+        }
     }
 
     /**
@@ -39,12 +49,24 @@ public class EventCollector implements Runnable{
      */
     public void run() {
         try {
-            events = calendar.events().list("primary")
-                    .setMaxResults(1)
-                    .setTimeMin(startTime)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
+            switch (type){
+                case START_END :
+                    events = calendar.events().list("primary")
+                            .setTimeMin(startTime)
+                            .setTimeMax(endTime)
+                            .setOrderBy(orderBy)
+                            .setSingleEvents(true)
+                            .execute();
+                    break;
+                case START_AMOUNT :
+                    events = calendar.events().list("primary")
+                            .setMaxResults(maxResults)
+                            .setTimeMin(startTime)
+                            .setOrderBy(orderBy)
+                            .setSingleEvents(true)
+                            .execute();
+                    break;
+            }
         } catch (IOException e) {
             events = new Events();
             e.printStackTrace();

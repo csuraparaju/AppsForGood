@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import android.os.Debug;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -93,17 +95,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         DateTime now = new DateTime(System.currentTimeMillis());
-        EventCollector nextEventGetter = new EventCollector(calendar, now, "startTime", 1);
+        EventCollector nextEventGetter = new EventCollector.Builder(calendar, EventCollector.START_AMOUNT)
+                .setStart(now)
+                .setMaxResults(10)
+                .setOrderBy("startTime")
+                .build();
 
         Thread collectorThread = new Thread(nextEventGetter);
         collectorThread.start();
         collectorThread.join();
         Events events = nextEventGetter.getResults();
 
-        String eventName = events.getItems().get(0).getSummary();
+        List<Event> eventList = events.getItems();
 
         TextView eventText = findViewById(R.id.NextEventText);
-        eventText.setText(eventName);
+        String eventNameZero = eventList.get(0).getSummary();
+        eventText.setText(eventNameZero);
     }
 
     /**
