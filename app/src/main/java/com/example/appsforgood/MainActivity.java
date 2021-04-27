@@ -2,65 +2,36 @@ package com.example.appsforgood;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 
-import android.os.Debug;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.ArrayList;
+
+import schedulingBackEnd.ModifiedEvent;
 
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
@@ -87,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
      * @throws IOException
      * @throws GeneralSecurityException
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void displayNextEvent(View v) throws IOException, GeneralSecurityException, InterruptedException {
 
         if(calendar == null) {
@@ -97,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         DateTime now = new DateTime(System.currentTimeMillis());
         EventCollector nextEventGetter = new EventCollector.Builder(calendar, EventCollector.START_AMOUNT)
                 .setStart(now)
-                .setMaxResults(10)
+                .setMaxResults(6)
                 .setOrderBy("startTime")
                 .build();
 
@@ -106,11 +78,12 @@ public class MainActivity extends AppCompatActivity {
         collectorThread.join();
         Events events = nextEventGetter.getResults();
 
-        List<Event> eventList = events.getItems();
+        ArrayList<Event> eventList = (ArrayList<Event>) events.getItems();
 
-        TextView eventText = findViewById(R.id.NextEventText);
-        String eventNameZero = eventList.get(0).getSummary();
-        eventText.setText(eventNameZero);
+        ArrayList<Event> avaliableSlots= new ModifiedEvent(eventList, 30).getAvaliableSlots();
+        for(int i=0; i<avaliableSlots.size(); i++){
+            Log.d("TestLogs", avaliableSlots.get(i).getStart().getDateTime().toStringRfc3339());
+        }
     }
 
     /**
