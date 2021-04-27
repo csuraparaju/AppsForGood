@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,11 +18,9 @@ public class modifiedEvent {
 
     private ArrayList<Event> allEvents;
     private ArrayList<Event> freeSlots;
-    private int workoutDuration;
 
-    public modifiedEvent(ArrayList<Event> e, int time) {
+    public modifiedEvent(ArrayList<Event> e) {
         allEvents = e;
-        workoutDuration = time;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -53,18 +52,35 @@ public class modifiedEvent {
             }
             Event currEvent = allEvents.get(i);
             Event nextEvent = allEvents.get(i+1);
+            DateTime currEventDateTime = currEvent.getEnd().getDateTime();
+            DateTime nextEventDateTime = nextEvent.getEnd().getDateTime();
+
+            LocalDateTime currLdt = LocalDateTime.ofInstant(Instant.ofEpochMilli(currEventDateTime.getValue()), ZoneId.systemDefault());
+            LocalDateTime nextLdt = LocalDateTime.ofInstant(Instant.ofEpochMilli(nextEventDateTime.getValue()), ZoneId.systemDefault());
 
             long[] timeBetween = getDurationBetweenEvents(currEvent.getStart().getDateTime(),nextEvent.getEnd().getDateTime());
 
-            if(currEvent.getEndTime().getHour() < nextEvent.getStartTime().getHour() || (int)timeBetween[1] > DURATION_OF_WORKOUT){
-                LocalDate ldStart = allEvents.get(i).getEndTime().plusMinutes(5).toLocalDate();
-                LocalTime ltStart = allEvents.get(i).getEndTime().plusMinutes(5).toLocalTime();
-                LocalDateTime start = LocalDateTime.of(ldStart, ltStart);
-                freeSlots.add(new Event(start));
+            if(currLdt.getHour() < nextLdt.getHour() || (int)timeBetween[1] > 30){
+                Event availableEvent = new Event()
+                        .setSummary("Available work out time");
 
+                DateTime startDateTime = new DateTime(currEventDateTime.getValue()+30000);
+                EventDateTime start = new EventDateTime()
+                        .setDateTime(startDateTime)
+                        .setTimeZone("America/New_York");
+                availableEvent.setStart(start);
+
+                DateTime endDateTime = new DateTime(currEventDateTime.getValue()+1800000);
+                EventDateTime end = new EventDateTime()
+                        .setDateTime(endDateTime)
+                        .setTimeZone("America/New_York");
+                availableEvent.setEnd(end);
+
+                freeSlots.add(availableEvent);
             }
         }
 
         return freeSlots;
     }
+
 }
