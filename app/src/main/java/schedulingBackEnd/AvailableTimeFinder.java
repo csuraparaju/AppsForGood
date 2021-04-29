@@ -27,7 +27,6 @@ public class AvailableTimeFinder {
         exerciseDuration = exDuration;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private static long getDurationBetweenEvents(DateTime db1, DateTime db2) {
         LocalDateTime ldt1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db1.getValue()), ZoneId.systemDefault());
         LocalDateTime ldt2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db2.getValue()), ZoneId.systemDefault());
@@ -39,7 +38,6 @@ public class AvailableTimeFinder {
         return info;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public ArrayList<Event> getAvaliableSlots(){
         for(int i = 0; i<allEvents.size();i++){
             if(i+1 == allEvents.size())

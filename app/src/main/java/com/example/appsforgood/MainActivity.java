@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void displayNextEvent(View v) throws IOException, GeneralSecurityException, InterruptedException {
 
         if(calendar == null) {
