@@ -15,20 +15,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 
-public class ModifiedEvent {
+public class AvailableTimeFinder {
 
-    private ArrayList<Event> allEvents;
+    private ArrayList<ParcelableEvent> allEvents;
     private ArrayList<Event> freeSlots = new ArrayList<Event>();
 
     private int exerciseDuration;
 
-    public ModifiedEvent(ArrayList<Event> e, int exDuration) {
+    public AvailableTimeFinder(ArrayList<ParcelableEvent> e, int exDuration) {
         allEvents = e;
         exerciseDuration = exDuration;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private long getDurationBetweenEvents(DateTime db1, DateTime db2) {
+    private static long getDurationBetweenEvents(DateTime db1, DateTime db2) {
         LocalDateTime ldt1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db1.getValue()), ZoneId.systemDefault());
         LocalDateTime ldt2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db2.getValue()), ZoneId.systemDefault());
 
@@ -47,10 +47,10 @@ public class ModifiedEvent {
                 return freeSlots;
             }
 
-            Event currEvent = allEvents.get(i);
-            Event nextEvent = allEvents.get(i+1);
-            DateTime currEventEndTime = currEvent.getEnd().getDateTime();
-            DateTime nextEventStartTime = nextEvent.getStart().getDateTime();
+            ParcelableEvent currEvent = allEvents.get(i);
+            ParcelableEvent nextEvent = allEvents.get(i+1);
+            DateTime currEventEndTime = new DateTime(currEvent.getEnd());
+            DateTime nextEventStartTime = new DateTime(nextEvent.getStart());
 
             long timeBetween = getDurationBetweenEvents(currEventEndTime, nextEventStartTime);
 

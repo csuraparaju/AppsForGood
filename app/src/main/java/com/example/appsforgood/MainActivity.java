@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
+import android.os.Parcel;
 import android.view.View;
 
 import android.widget.Toast;
@@ -31,7 +31,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
-import schedulingBackEnd.ModifiedEvent;
+import schedulingBackEnd.AccessTokenGetter;
+import schedulingBackEnd.EventCollector;
+import schedulingBackEnd.ParcelableEvent;
 
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
@@ -45,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this, SignIn.class);
 
+        Intent intent = new Intent(this, SignIn.class);
         if(account == null) { // Starts SignIn activity in order to sign user in with Google
             startActivityForResult(intent, RQ_SIGN_IN);
         }
@@ -80,10 +82,21 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Event> eventList = (ArrayList<Event>) events.getItems();
 
-        ArrayList<Event> avaliableSlots= new ModifiedEvent(eventList, 30).getAvaliableSlots();
+        /*ArrayList<Event> avaliableSlots= new ModifiedEvent(eventList, 30).getAvaliableSlots();
         for(int i=0; i<avaliableSlots.size(); i++){
             Log.d("TestLogs", avaliableSlots.get(i).getStart().getDateTime().toStringRfc3339());
+        }*/
+
+        ArrayList<ParcelableEvent> parcelableEventList = new ArrayList<ParcelableEvent>();
+        for(int i = 0; i<eventList.size(); i++){
+            parcelableEventList.add(new ParcelableEvent(eventList.get(i)));
         }
+
+        Intent intent = new Intent(this, CalViewActivity.class)
+                .putParcelableArrayListExtra("events", parcelableEventList)
+                .putExtra("exDuration", 30);
+
+        startActivity(intent);
     }
 
     /**
