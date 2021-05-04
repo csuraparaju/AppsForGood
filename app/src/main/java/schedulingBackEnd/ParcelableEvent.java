@@ -7,19 +7,18 @@ import com.google.api.services.calendar.model.Event;
 
 public class ParcelableEvent implements Parcelable {
     private String id;
-    private long startTime;
-    private long endTime;
+    private long[] times = new long[2];
 
     public ParcelableEvent(Event event){
         id = event.getSummary();
-        startTime = event.getStart().getDateTime().getValue();
-        startTime = event.getEnd().getDateTime().getValue();
+        times[0] = event.getStart().getDateTime().getValue();
+        times[1] = event.getEnd().getDateTime().getValue();
     }
 
     protected ParcelableEvent(Parcel in) {
         id = in.readString();
-        startTime = in.readLong();
-        endTime = in.readLong();
+        times[0] = in.readLong();
+        times[1] = in.readLong();
     }
 
     @Override
@@ -30,8 +29,8 @@ public class ParcelableEvent implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
-        dest.writeLong(startTime);
-        dest.writeLong(endTime);
+        dest.writeLong(times[0]);
+        dest.writeLong(times[1]);
     }
 
     public String getId(){
@@ -39,11 +38,11 @@ public class ParcelableEvent implements Parcelable {
     }
 
     public long getStart(){
-        return startTime;
+        return times[0];
     }
 
     public long getEnd(){
-        return endTime;
+        return times[1];
     }
 
     public static final Creator<ParcelableEvent> CREATOR = new Creator<ParcelableEvent>() {
