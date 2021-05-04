@@ -22,6 +22,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         if(account == null) { // Starts SignIn activity in order to sign user in with Google
             startActivityForResult(intent, RQ_SIGN_IN);
         }
+
+
+
     }
 
     /**
