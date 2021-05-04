@@ -86,11 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Event> eventList = (ArrayList<Event>) events.getItems();
 
-        /*ArrayList<Event> avaliableSlots= new ModifiedEvent(eventList, 30).getAvaliableSlots();
-        for(int i=0; i<avaliableSlots.size(); i++){
-            Log.d("TestLogs", avaliableSlots.get(i).getStart().getDateTime().toStringRfc3339());
-        }*/
-
         ArrayList<ParcelableEvent> parcelableEventList = new ArrayList<ParcelableEvent>();
         for(int i = 0; i<eventList.size(); i++){
             parcelableEventList.add(new ParcelableEvent(eventList.get(i)));
