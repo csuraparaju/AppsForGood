@@ -22,8 +22,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+//import com.google.firebase.database.DatabaseReference;
+//import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         DateTime now = new DateTime(System.currentTimeMillis());
         EventCollector nextEventGetter = new EventCollector.Builder(calendar, EventCollector.START_AMOUNT)
                 .setStart(now)
-                .setMaxResults(6)
+                .setMaxResults(4)
                 .setOrderBy("startTime")
                 .build();
 

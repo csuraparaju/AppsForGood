@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.appsforgood.ModifiedEvent;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
@@ -14,15 +15,16 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AvailableTimeFinder {
 
-    private ArrayList<ParcelableEvent> allEvents;
-    private ArrayList<Event> freeSlots = new ArrayList<Event>();
+    private List<ModifiedEvent> allEvents;
+    private ArrayList<ModifiedEvent> freeSlots = new ArrayList<ModifiedEvent>();
 
     private int exerciseDuration;
 
-    public AvailableTimeFinder(ArrayList<ParcelableEvent> e, int exDuration) {
+    public AvailableTimeFinder(List<ModifiedEvent> e, int exDuration) {
         allEvents = e;
         exerciseDuration = exDuration;
     }
@@ -38,35 +40,24 @@ public class AvailableTimeFinder {
         return info;
     }
 
-    public ArrayList<Event> getAvaliableSlots(){
+    public ArrayList<ModifiedEvent> getAvailableSlots(){
         for(int i = 0; i<allEvents.size();i++){
             if(i+1 == allEvents.size())
             {
                 return freeSlots;
             }
 
-            ParcelableEvent currEvent = allEvents.get(i);
-            ParcelableEvent nextEvent = allEvents.get(i+1);
-            DateTime currEventEndTime = new DateTime(currEvent.getEnd());
-            DateTime nextEventStartTime = new DateTime(nextEvent.getStart());
+            ModifiedEvent currEvent = allEvents.get(i);
+            ModifiedEvent nextEvent = allEvents.get(i+1);
+            DateTime currEventEndTime = new DateTime(currEvent.getEndTimeMilli());
+            DateTime nextEventStartTime = new DateTime(nextEvent.getStartTimeMilli());
 
             long timeBetween = getDurationBetweenEvents(currEventEndTime, nextEventStartTime);
 
             if(timeBetween > exerciseDuration) {
-                Event availableEvent = new Event()
-                        .setSummary("Available work out time");
-
-                DateTime startDateTime = new DateTime(currEventEndTime.getValue() + 30000);
-                EventDateTime start = new EventDateTime()
-                        .setDateTime(startDateTime)
-                        .setTimeZone("America/New_York");
-                availableEvent.setStart(start);
-
-                DateTime endDateTime = new DateTime(currEventEndTime.getValue() + 1800000);
-                EventDateTime end = new EventDateTime()
-                        .setDateTime(endDateTime)
-                        .setTimeZone("America/New_York");
-                availableEvent.setEnd(end);
+                ModifiedEvent availableEvent = new ModifiedEvent("Possible workout time",
+                        currEventEndTime.getValue() + 30000,
+                        currEventEndTime.getValue() + 1800000);
 
                 freeSlots.add(availableEvent);
             }

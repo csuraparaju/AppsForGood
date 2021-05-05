@@ -52,6 +52,7 @@ public class EventCollector implements Runnable{
                     events = calendar.events().list("primary")
                             .setTimeMin(startTime)
                             .setTimeMax(endTime)
+                            .setMaxResults(100)
                             .setOrderBy(orderBy)
                             .setSingleEvents(true)
                             .execute();

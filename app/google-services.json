@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "442942742888",
+    "firebase_url": "https://apps-for-good-1617720821915-default-rtdb.firebaseio.com",
+    "project_id": "apps-for-good-1617720821915",
+    "storage_bucket": "apps-for-good-1617720821915.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442942742888:android:1e8cdadb8ac33c0b10f6dd",
+        "android_client_info": {
+          "package_name": "com.example.appsforgood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "442942742888-f3k0928gune70j0dmbj28tcag5s92i8p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.appsforgood",
+            "certificate_hash": "10b3c8d0a552aa03d3b96132730c1861004bd8b0"
+          }
+        },
+        {
+          "client_id": "442942742888-87dbulabuc7be33mn6g2guvbilmib1ii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1zlc36y-ly7JYvgsLYWDtzqSIr3c9Gks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "442942742888-87dbulabuc7be33mn6g2guvbilmib1ii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
