@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class CalViewActivity extends AppCompatActivity {
         for(int i=0; i<availableSlots.size(); i++){
             Log.d("TestLogs", availableSlots.get(i).getStartAsString());
         }
+
+        Log.d("TestLogs","From Google.DateTime: "+ new DateTime(0).toStringRfc3339());
+        Log.d("TestLogs","From ModifiedEvent: "+ new ModifiedEvent("a",0,0).getStartAsString());
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

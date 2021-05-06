@@ -2,6 +2,9 @@ package com.example.appsforgood;
 
 import com.google.api.services.calendar.model.Event;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,18 +53,24 @@ public class ModifiedEvent {
         return milliToTimeString(endTimeMilli);
     }
 
+    public long getDuration(){
+        return this.endTimeMilli - this.startTimeMilli;
+    }
+
 
     public static String milliToTimeString(long millis) {
-        int timeMillis = (int) (millis % (24 * 60 * 60 * 1000));
+        Instant instant = Instant.ofEpochMilli(millis);
 
-        int hours = timeMillis / (60 * 60 * 1000);
-        int mins = (timeMillis / (60 * 1000)) % 60;
+        int hours = instant.atZone(ZoneId.systemDefault()).getHour();
+        int mins = instant.atZone(ZoneId.systemDefault()).getMinute();
 
         if (hours < 12) {
             if (hours == 0) hours = 12;
             return String.format("%1$d:%2$02d am", hours, mins);
         } else {
-            return String.format("%1$d:%2$02d pm", hours % 12, mins);
+            hours = hours % 12;
+            if (hours == 0) hours = 12;
+            return String.format("%1$d:%2$02d pm", hours, mins);
         }
     }
 
