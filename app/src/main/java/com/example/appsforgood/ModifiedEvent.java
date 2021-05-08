@@ -57,6 +57,9 @@ public class ModifiedEvent {
         return this.endTimeMilli - this.startTimeMilli;
     }
 
+    public ParcelableEvent toParcelableEvent(){
+        return new ParcelableEvent(this.name, this.startTimeMilli, this.endTimeMilli);
+    }
 
     public static String milliToTimeString(long millis) {
         Instant instant = Instant.ofEpochMilli(millis);
@@ -78,6 +81,15 @@ public class ModifiedEvent {
         List<ModifiedEvent> out = new ArrayList<ModifiedEvent>();
         for (int i = 0; i < events.size(); i++) {
             out.add(new ModifiedEvent(events.get(i)));
+        }
+
+        return out;
+    }
+
+    public static ArrayList<ParcelableEvent> convertToParcelableList(List<ModifiedEvent> events){
+        ArrayList<ParcelableEvent> out = new ArrayList<ParcelableEvent>();
+        for (int i = 0; i < events.size(); i++) {
+            out.add(events.get(i).toParcelableEvent());
         }
 
         return out;

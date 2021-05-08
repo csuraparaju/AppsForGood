@@ -15,7 +15,7 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="displayNextEvent"
+            android:onClick="OpenCalView"
             android:text="Button" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

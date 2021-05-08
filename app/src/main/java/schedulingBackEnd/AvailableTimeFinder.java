@@ -17,10 +17,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import uiBackEnd.RecyclerViewData;
+
 public class AvailableTimeFinder {
 
     private List<ModifiedEvent> allEvents;
-    private ArrayList<ModifiedEvent> freeSlots = new ArrayList<ModifiedEvent>();
+    private RecyclerViewData eventsAndSlots = new RecyclerViewData();
 
     private int exerciseDuration;
 
@@ -40,11 +42,14 @@ public class AvailableTimeFinder {
         return info;
     }
 
-    public ArrayList<ModifiedEvent> getAvailableSlots(){
+    public RecyclerViewData getAvailableSlots(){
         for(int i = 0; i<allEvents.size();i++){
+
+            eventsAndSlots.addRealEvent(allEvents.get(i));
+
             if(i+1 == allEvents.size())
             {
-                return freeSlots;
+                return eventsAndSlots;
             }
 
             ModifiedEvent currEvent = allEvents.get(i);
@@ -56,14 +61,14 @@ public class AvailableTimeFinder {
 
             if(timeBetween > exerciseDuration) {
                 ModifiedEvent availableEvent = new ModifiedEvent("Possible workout time",
-                        currEventEndTime.getValue() + 30000,
-                        currEventEndTime.getValue() + 1800000);
+                        currEventEndTime.getValue(),
+                        nextEventStartTime.getValue());
 
-                freeSlots.add(availableEvent);
+                eventsAndSlots.addPossibleEvent(availableEvent);
             }
         }
 
-        return freeSlots;
+        return eventsAndSlots;
     }
 
 }

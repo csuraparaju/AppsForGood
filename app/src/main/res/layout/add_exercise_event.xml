@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/edit_text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nex Exercise Event"
+        android:inputType="text"
+        tools:ignore="MissingConstraints"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select a start time between"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/textView_boundary_times"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="X and X"
+        android:textAlignment="center"/>
+
+    <TimePicker
+        android:id="@+id/TimePicker_start_time"
+        android:timePickerMode="spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
+</LinearLayout>

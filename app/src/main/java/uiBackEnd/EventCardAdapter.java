@@ -1,6 +1,7 @@
 package uiBackEnd;
 
 
+import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appsforgood.AddNoteActivity;
 import com.example.appsforgood.ModifiedEvent;
 import com.example.appsforgood.R;
 
@@ -22,24 +24,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventCardAdapter extends RecyclerView.Adapter<EventCardAdapter.ItemHolder> {
-    private List<ModifiedEvent> events = new ArrayList<ModifiedEvent>();
+    private RecyclerViewData data = new RecyclerViewData();
+    private OnCardClickListener listener;
+
+    public int getItemViewType(int position){
+        if(data.isEventReal(position)) return 0;
+        else return 1;
+    }
 
     @NonNull
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.calendar_view_item, parent, false);
+        View itemView;
+        if(viewType == 0) {
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.calendar_view_item, parent, false);
+        }
+        else{
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.possible_calendar_view_item, parent, false);
+        }
         return new ItemHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder holder, int position) {
-        ModifiedEvent currentEvent = events.get(position);
+        ModifiedEvent currentEvent = data.getEvent(position);
         holder.textViewName.setText(currentEvent.getName());
         holder.textViewStart.setText(currentEvent.getStartAsString());
         holder.textViewEnd.setText(currentEvent.getEndAsString());
 
-        float heightDp = currentEvent.getDuration() / (60f * 1000f);
+        float heightDp = 2*currentEvent.getDuration() / (60f * 1000f);
 
         DisplayMetrics metrics = holder.itemView.getContext().getResources().getDisplayMetrics();
         float heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, metrics);
@@ -51,24 +66,37 @@ public class EventCardAdapter extends RecyclerView.Adapter<EventCardAdapter.Item
 
 
         if(position != 0){
-            ModifiedEvent previousEvent = events.get(position-1);
+            ModifiedEvent previousEvent = data.getEvent(position-1);
             RecyclerView.LayoutParams cardParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
 
-            float marginDp = 1 + (currentEvent.getStartTimeMilli()-previousEvent.getEndTimeMilli())/(60f * 1000f);
+            float marginDp = 8 + (2 * (currentEvent.getStartTimeMilli()-previousEvent.getEndTimeMilli())/(60f * 1000f));
             float marginPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginDp, metrics);
             cardParams.topMargin = (int) marginPixels;
 
             holder.itemView.setLayoutParams(cardParams);
         }
+
+        if(!data.isEventReal(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if(listener != null) listener.onCardClick(data.getEvent(position), position);
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return events.size();
+        return data.size();
     }
 
-    public void setEvents(List<ModifiedEvent> events){
-        this.events = events;
+    public void setEvents(RecyclerViewData data){
+        this.data = data;
+        notifyDataSetChanged();
+    }
+
+    public void replaceEvent(ModifiedEvent event, boolean isReal, int index){
+        data.replace(index, event, isReal);
         notifyDataSetChanged();
     }
 
@@ -87,4 +115,11 @@ public class EventCardAdapter extends RecyclerView.Adapter<EventCardAdapter.Item
         }
     }
 
+    public interface OnCardClickListener{
+        void onCardClick(ModifiedEvent event, int index);
+    }
+
+    public void setOnCardClickListener(OnCardClickListener listener){
+        this.listener = listener;
+    }
 }

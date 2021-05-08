@@ -15,6 +15,12 @@ public class ParcelableEvent implements Parcelable {
         times[1] = event.getEnd().getDateTime().getValue();
     }
 
+    public ParcelableEvent(String name, long start, long end){
+        id = name;
+        times[0] = start;
+        times[1] = end;
+    }
+
     protected ParcelableEvent(Parcel in) {
         id = in.readString();
         times[0] = in.readLong();

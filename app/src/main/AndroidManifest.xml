@@ -12,6 +12,7 @@
         android:theme="@style/Theme.AppsForGood">
         <activity android:name=".SignIn"></activity>
         <activity android:name=".CalViewActivity"></activity>
+        <activity android:name=".AddNoteActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
