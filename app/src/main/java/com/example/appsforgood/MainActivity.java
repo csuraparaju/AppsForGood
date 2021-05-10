@@ -12,6 +12,9 @@ import android.os.Parcel;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -45,6 +48,9 @@ import schedulingBackEnd.ParcelableEvent;
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private Button mButton;
+    private EditText mEdit;
+    private TextView mText;
 
     private static final int RQ_CHOOSE_TIMES = 1212;
     private static final int RQ_SIGN_IN = 8787;
@@ -70,6 +76,17 @@ public class MainActivity extends AppCompatActivity {
      * @throws GeneralSecurityException
      */
     public void OpenCalView(View v) throws IOException, GeneralSecurityException, InterruptedException {
+
+        mButton = (Button)findViewById(R.id.submitButton);
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mEdit   = (EditText)findViewById(R.id.inputDuration);
+                mText = (TextView)findViewById(R.id.textView);
+                mText.setText("Workout Duration Entered: "+mEdit.getText().toString()+"!");
+
+            }
+        });
 
         if (calendar == null) {
             String authCode = account.getServerAuthCode();
