@@ -24,11 +24,15 @@ public class AvailableTimeFinder {
     private List<ModifiedEvent> allEvents;
     private RecyclerViewData eventsAndSlots = new RecyclerViewData();
 
+    private long wakeUpTime;
+    private long sleepTime;
     private int exerciseDuration;
 
-    public AvailableTimeFinder(List<ModifiedEvent> e, int exDuration) {
+    public AvailableTimeFinder(List<ModifiedEvent> e, int exDuration, long wakeUpTime, long sleepTime) {
         allEvents = e;
         exerciseDuration = exDuration;
+        this.wakeUpTime = wakeUpTime;
+        this.sleepTime = sleepTime;
     }
 
     private static long getDurationBetweenEvents(DateTime db1, DateTime db2) {
@@ -37,29 +41,43 @@ public class AvailableTimeFinder {
 
         Duration duration = Duration.between(ldt1, ldt2);
         long seconds = duration.getSeconds();
-        long info = seconds/60;
+        long info = seconds / 60;
 
         return info;
     }
 
-    public RecyclerViewData getAvailableSlots(){
-        for(int i = 0; i<allEvents.size();i++){
+    public RecyclerViewData getAvailableSlots() {
+        Log.d("testLogs", exerciseDuration+"");
+        if (allEvents.size() != 0)
+            if (allEvents.get(0).getStartTimeMilli() - wakeUpTime > exerciseDuration * 60 * 1000)
+                eventsAndSlots.addPossibleEvent(
+                        new ModifiedEvent("Possible workout time",
+                                wakeUpTime,
+                                allEvents.get(0).getStartTimeMilli()
+                        ));
+
+        for (int i = 0; i < allEvents.size(); i++) {
 
             eventsAndSlots.addRealEvent(allEvents.get(i));
 
-            if(i+1 == allEvents.size())
-            {
+            if (i + 1 == allEvents.size()) {
+                if (sleepTime - allEvents.get(i).getEndTimeMilli() > exerciseDuration * 60 * 1000)
+                    eventsAndSlots.addPossibleEvent(
+                            new ModifiedEvent("Possible workout time",
+                                    allEvents.get(i).getEndTimeMilli(),
+                                    sleepTime
+                            ));
                 return eventsAndSlots;
             }
 
             ModifiedEvent currEvent = allEvents.get(i);
-            ModifiedEvent nextEvent = allEvents.get(i+1);
+            ModifiedEvent nextEvent = allEvents.get(i + 1);
             DateTime currEventEndTime = new DateTime(currEvent.getEndTimeMilli());
             DateTime nextEventStartTime = new DateTime(nextEvent.getStartTimeMilli());
 
             long timeBetween = getDurationBetweenEvents(currEventEndTime, nextEventStartTime);
 
-            if(timeBetween > exerciseDuration) {
+            if (timeBetween > exerciseDuration) {
                 ModifiedEvent availableEvent = new ModifiedEvent("Possible workout time",
                         currEventEndTime.getValue(),
                         nextEventStartTime.getValue());

@@ -49,9 +49,13 @@ public class AddNoteActivity extends AppCompatActivity {
         timePicker.setHour(startHour);
         timePicker.setMinute(startMin);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_ios_24);
+        ModifiedEvent allowedTimes =
+            new ModifiedEvent("allowedTimes",
+                    possibleEvent.getStartTimeMilli(),
+                    possibleEvent.getEndTimeMilli() - allowedDuration * 60 *1000);
+
         setTitle("Add Event on ");
-        textViewTimeConstraints.setText(possibleEvent.getStartAsString()+" and "+possibleEvent.getEndAsString());
+        textViewTimeConstraints.setText(allowedTimes.getStartAsString()+" and "+allowedTimes.getEndAsString());
     }
 
     private void saveEvent(){

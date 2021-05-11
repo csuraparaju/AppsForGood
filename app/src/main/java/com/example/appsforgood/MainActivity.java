@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -48,9 +49,6 @@ import schedulingBackEnd.ParcelableEvent;
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private Button mButton;
-    private EditText mEdit;
-    private TextView mText;
 
     private static final int RQ_CHOOSE_TIMES = 1212;
     private static final int RQ_SIGN_IN = 8787;
@@ -66,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
         if (account == null) { // Starts SignIn activity in order to sign user in with Google
             startActivityForResult(intent, RQ_SIGN_IN);
         }
+
+        TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
+        wakeUpPicker.setHour(5);
+        wakeUpPicker.setMinute(0);
+        TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
+        sleepPicker.setHour(22);
+        sleepPicker.setMinute(0);
     }
 
     /**
@@ -76,18 +81,6 @@ public class MainActivity extends AppCompatActivity {
      * @throws GeneralSecurityException
      */
     public void OpenCalView(View v) throws IOException, GeneralSecurityException, InterruptedException {
-
-        mButton = (Button)findViewById(R.id.submitButton);
-
-        mButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                mEdit   = (EditText)findViewById(R.id.inputDuration);
-                mText = (TextView)findViewById(R.id.textView);
-                mText.setText("Workout Duration Entered: "+mEdit.getText().toString()+"!");
-
-            }
-        });
-
         if (calendar == null) {
             String authCode = account.getServerAuthCode();
             calendar = getCalendar(getToken(authCode, "N3T1hB9SZbG92LIaXurmzFP9"));
@@ -97,10 +90,10 @@ public class MainActivity extends AppCompatActivity {
         int startHour = instant.atZone(ZoneId.systemDefault()).getHour();
         int startMin = instant.atZone(ZoneId.systemDefault()).getMinute();
 
-        Long dateMilli = (24*60*60*1000) + System.currentTimeMillis() - startHour * (60*60*1000) - startMin * (60*1000);
+        Long dateMilli = (24 * 60 * 60 * 1000) + System.currentTimeMillis() - startHour * (60 * 60 * 1000) - startMin * (60 * 1000);
 
         DateTime now = new DateTime(dateMilli);
-        DateTime end = new DateTime(dateMilli + (24*60*60*1000));
+        DateTime end = new DateTime(dateMilli + (24 * 60 * 60 * 1000));
         EventCollector nextEventGetter = new EventCollector.Builder(calendar, EventCollector.START_END)
                 .setStart(now)
                 .setEnd(end)
@@ -119,9 +112,21 @@ public class MainActivity extends AppCompatActivity {
             parcelableEventList.add(new ParcelableEvent(eventList.get(i)));
         }
 
+        EditText durationField = findViewById(R.id.inputDuration);
+        String durStr = durationField.getText().toString();
+        int duration;
+        Log.d("TextLogs", durStr);
+        if(durStr != "") duration = Integer.parseInt(durStr);
+        else duration = 0;
+
+        long wakeUpTime = dateMilli + collectWakeUpTime();
+        long sleepTime = dateMilli + collectSleepTime();
+
         Intent intent = new Intent(this, CalViewActivity.class)
                 .putParcelableArrayListExtra("events", parcelableEventList)
-                .putExtra("exDuration", 30);
+                .putExtra("exDuration", duration)
+                .putExtra("wakeUpTime", wakeUpTime)
+                .putExtra("sleepTime", sleepTime);
 
         startActivityForResult(intent, RQ_CHOOSE_TIMES);
     }
@@ -170,6 +175,20 @@ public class MainActivity extends AppCompatActivity {
         String accessToken = tokenGetter.getAccessToken();
 
         return accessToken;
+    }
+
+    private long collectWakeUpTime() {
+        TimePicker picker = findViewById(R.id.inputWakeUpTime);
+        int hour = picker.getHour();
+        int min = picker.getMinute();
+        return hour * (60L * 60 * 1000) + min * (60L * 1000);
+    }
+
+    private long collectSleepTime() {
+        TimePicker picker = findViewById(R.id.inputSleepTime);
+        int hour = picker.getHour();
+        int min = picker.getMinute();
+        return hour * (60L * 60 * 1000) + min * (60L * 1000);
     }
 
     /**
@@ -232,9 +251,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     calEvent = calendar.events().insert(calendarId, calendarEvent).execute();
                 } catch (IOException e) {
-                    Log.d("TestLog", "Error: "+e.toString());
+                    Log.d("TestLog", "Error: " + e.toString());
                 }
-                Log.d("TestLog", "\"Event created: %s\\n\""+ calEvent.getHtmlLink());
+                Log.d("TestLog", "\"Event created: %s\\n\"" + calEvent.getHtmlLink());
             }
         });
 

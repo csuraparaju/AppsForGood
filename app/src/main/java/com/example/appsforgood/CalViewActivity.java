@@ -40,8 +40,13 @@ public class CalViewActivity extends AppCompatActivity {
         List<ParcelableEvent> collectedEventList = extras.getParcelableArrayList("events");
         List<ModifiedEvent> eventList = ModifiedEvent.convertParcelableList(collectedEventList);
         int exDuration = extras.getInt("exDuration");
+        long wakeUpTime = extras.getLong("wakeUpTime");
+        long sleepTime = extras.getLong("sleepTime");
 
-        RecyclerViewData recyclerViewData = new AvailableTimeFinder(eventList, exDuration).getAvailableSlots();
+        RecyclerViewData recyclerViewData =
+                new AvailableTimeFinder(eventList, exDuration, wakeUpTime, sleepTime)
+                        .getAvailableSlots();
+
         for(int i=0; i<recyclerViewData.size(); i++){
             Log.d("TestLogs", recyclerViewData.getEvent(i).getStartAsString());
         }
