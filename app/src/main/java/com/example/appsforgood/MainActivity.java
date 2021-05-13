@@ -2,6 +2,7 @@ package com.example.appsforgood;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -37,6 +38,7 @@ import com.squareup.okhttp.RequestBody;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.sql.Time;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -49,12 +51,23 @@ import schedulingBackEnd.ParcelableEvent;
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
+    private static final String SHARED_PREFS = "sharedPrefs";
+    private static final String WAKE_HOUR = "wake hour";
+    private static final String WAKE_MINUTE = "wake minute";
+    private static final String SLEEP_HOUR = "sleep hour";
+    private static final String SLEEP_MINUTE = "sleep minute";
+    private static final String DURATION = "duration";
     private static final int RQ_CHOOSE_TIMES = 1212;
     private static final int RQ_SIGN_IN = 8787;
     private GoogleSignInAccount account = null;
 
     private Calendar calendar = null;
+    private static int wakeHour;
+    private static int wakeMin;
+    private static int sleepHour;
+    private static int sleepMin;
+    private static int workOutDuration;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,13 +78,68 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, RQ_SIGN_IN);
         }
 
-        TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
-        wakeUpPicker.setHour(5);
-        wakeUpPicker.setMinute(0);
-        TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
-        sleepPicker.setHour(22);
-        sleepPicker.setMinute(0);
+        loadData();
+        updateFields();
+
     }
+
+    public void saveData(){
+        TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
+        TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
+        EditText durationField = findViewById(R.id.inputDuration);
+
+        SharedPreferences sh = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
+        SharedPreferences.Editor editor = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE).edit();
+
+        editor.putInt(WAKE_HOUR,wakeUpPicker.getHour());
+        editor.putInt(WAKE_MINUTE,wakeUpPicker.getMinute());
+
+        editor.putInt(SLEEP_HOUR,sleepPicker.getHour());
+        editor.putInt(SLEEP_MINUTE,sleepPicker.getMinute());
+
+        editor.putInt(DURATION,Integer.parseInt(durationField.getText().toString()));
+
+        editor.apply();
+
+        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void loadData(){
+
+        SharedPreferences sh = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
+
+        wakeHour = sh.getInt(WAKE_HOUR,5);
+        wakeMin = sh.getInt(WAKE_MINUTE,0);
+
+        sleepHour = sh.getInt(SLEEP_HOUR,22);
+        sleepMin = sh.getInt(SLEEP_MINUTE,0);
+
+        workOutDuration = sh.getInt(DURATION,0);
+    }
+
+    public void updateFields(){
+        TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
+        TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
+        EditText durationField = findViewById(R.id.inputDuration);
+
+        wakeUpPicker.setHour(wakeHour);
+        wakeUpPicker.setMinute(wakeMin);
+
+        sleepPicker.setHour(sleepHour);
+        sleepPicker.setMinute(sleepMin);
+
+        durationField.setText(String.valueOf(workOutDuration));
+    }
+
+/**
+    public void  loadTimer(TimePicker timepicker) {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        timepicker.setHour(prefs.getInt("hour", 1));
+        timepicker.setMinute(prefs.getInt("minute", 01));
+    }
+    **/
+
 
     /**
      * Runs on {} button press, displays the next event on the user's calendar in the TextView above.
@@ -81,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
      * @throws GeneralSecurityException
      */
     public void OpenCalView(View v) throws IOException, GeneralSecurityException, InterruptedException {
+        saveData();
+
         if (calendar == null) {
             String authCode = account.getServerAuthCode();
             calendar = getCalendar(getToken(authCode, "N3T1hB9SZbG92LIaXurmzFP9"));
