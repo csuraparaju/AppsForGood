@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -40,7 +41,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Time;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,11 +160,10 @@ public class MainActivity extends AppCompatActivity {
             calendar = getCalendar(getToken(authCode, "N3T1hB9SZbG92LIaXurmzFP9"));
         }
 
-        Instant instant = Instant.ofEpochMilli(System.currentTimeMillis());
-        int startHour = instant.atZone(ZoneId.systemDefault()).getHour();
-        int startMin = instant.atZone(ZoneId.systemDefault()).getMinute();
+        Long dateMilli = collectDateMillis();
 
-        Long dateMilli = (24 * 60 * 60 * 1000) + System.currentTimeMillis() - startHour * (60 * 60 * 1000) - startMin * (60 * 1000);
+        Log.d("TimeTest", "collect: "+collectDateMillis());
+        Log.d("TimeTest", "other: "+dateMilli);
 
         DateTime now = new DateTime(dateMilli);
         DateTime end = new DateTime(dateMilli + (24 * 60 * 60 * 1000));
@@ -259,6 +262,30 @@ public class MainActivity extends AppCompatActivity {
         int hour = picker.getHour();
         int min = picker.getMinute();
         return hour * (60L * 60 * 1000) + min * (60L * 1000);
+    }
+
+    private long collectDateMillis() {
+        DatePicker picker = findViewById(R.id.datePicker);
+
+        int day = picker.getDayOfMonth();
+        int month = picker.getMonth() + 1;
+        int year = picker.getYear();
+
+        //DateTime time = DateTime.parseRfc3339()
+
+        String dayStr = (day >= 10) ? String.valueOf(day) : "0" + day;
+        String monthStr = (month >= 10) ? String.valueOf(month) : "0" + month;
+        String yearStr = String.valueOf(year);
+        for(int i = 0; i < 4 - yearStr.length(); i++) yearStr = "0" + yearStr;
+
+        String fullDate = dayStr + "/" + monthStr + "/" + yearStr + " 00:00:00";
+
+        Log.d("TimeTest", fullDate);
+
+        LocalDateTime time = LocalDateTime.parse(fullDate, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        long millis = time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000;
+
+        return millis;
     }
 
     /**

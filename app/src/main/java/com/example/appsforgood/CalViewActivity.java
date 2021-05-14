@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class CalViewActivity extends AppCompatActivity {
         int exDuration = extras.getInt("exDuration");
         long wakeUpTime = extras.getLong("wakeUpTime");
         long sleepTime = extras.getLong("sleepTime");
+
+        setTitle(createTitle(wakeUpTime));
 
         RecyclerViewData recyclerViewData =
                 new AvailableTimeFinder(eventList, exDuration, wakeUpTime, sleepTime)
@@ -69,6 +73,7 @@ public class CalViewActivity extends AppCompatActivity {
                 intent.putExtra("possibleEvent", event.toParcelableEvent());
                 intent.putExtra("exerciseTime", exDuration);
                 intent.putExtra("index", index);
+                intent.putExtra("date", createTitle(wakeUpTime));
                 startActivityForResult(intent, ADD_NOTE_REQUEST_CODE);
             }
         });
@@ -115,5 +120,14 @@ public class CalViewActivity extends AppCompatActivity {
         data.putParcelableArrayListExtra("newEvents", ModifiedEvent.convertToParcelableList(newEvents));
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    public String createTitle(long wakeUpTime){
+        Instant instant = Instant.ofEpochMilli(wakeUpTime);
+        int day = instant.atZone(ZoneId.systemDefault()).getDayOfMonth();
+        int month = instant.atZone(ZoneId.systemDefault()).getMonthValue();
+        int year = instant.atZone(ZoneId.systemDefault()).getYear();
+
+        return month+"/"+day+"/"+year;
     }
 }

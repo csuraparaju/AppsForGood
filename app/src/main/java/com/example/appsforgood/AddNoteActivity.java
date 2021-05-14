@@ -37,6 +37,7 @@ public class AddNoteActivity extends AppCompatActivity {
         possibleEvent = new ModifiedEvent((ParcelableEvent) this.getIntent().getParcelableExtra("possibleEvent"));
         allowedDuration = this.getIntent().getIntExtra("exerciseTime", 10);
         index = this.getIntent().getIntExtra("index", -1);
+        String date = this.getIntent().getStringExtra("date");
 
         titlePicker = findViewById(R.id.edit_text_title);
         timePicker = findViewById(R.id.TimePicker_start_time);
@@ -54,7 +55,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     possibleEvent.getStartTimeMilli(),
                     possibleEvent.getEndTimeMilli() - allowedDuration * 60 *1000);
 
-        setTitle("Add Event on ");
+        setTitle("Add Event on "+ date);
         textViewTimeConstraints.setText(allowedTimes.getStartAsString()+" and "+allowedTimes.getEndAsString());
     }
 
