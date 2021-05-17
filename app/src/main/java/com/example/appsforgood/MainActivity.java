@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         if (account == null) { // Starts SignIn activity in order to sign user in with Google
             startActivityForResult(intent, RQ_SIGN_IN);
         }
-
         loadData();
         updateFields();
 
