@@ -22,6 +22,8 @@ import schedulingBackEnd.ParcelableEvent;
 /**
  * Handles the interface that allows the user to add a new exercise event to their schedule during
  * an available time slot provided by the activities parent {@link CalViewActivity}.
+ *
+ * @see AppCompatActivity
  */
 public class AddNoteActivity extends AppCompatActivity {
     private EditText titlePicker;
