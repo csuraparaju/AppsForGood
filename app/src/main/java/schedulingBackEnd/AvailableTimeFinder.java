@@ -1,33 +1,40 @@
 package schedulingBackEnd;
 
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.example.appsforgood.ModifiedEvent;
 import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 
 import uiBackEnd.RecyclerViewData;
 
+/**
+ * Determines, stores, and provides the available time slots in a user's schedule on a given day
+ *
+ * @author Krish Suraparaju
+ */
 public class AvailableTimeFinder {
 
     private List<ModifiedEvent> allEvents;
-    private RecyclerViewData eventsAndSlots = new RecyclerViewData();
 
     private long wakeUpTime;
     private long sleepTime;
     private int exerciseDuration;
 
+    /**
+     * Constructs an {@link AvailableTimeFinder} that can find available time slots in a schedule
+     * given the parameters
+     *
+     * @param e the list of {@link ModifiedEvent}s that make up the user's schedule on a given day
+     * @param exDuration the target duration for found exercise events
+     * @param wakeUpTime the user's wake up time on the given day (millis)
+     * @param sleepTime the user's sleep time on the given day (millis)
+     */
     public AvailableTimeFinder(List<ModifiedEvent> e, int exDuration, long wakeUpTime, long sleepTime) {
         allEvents = e;
         exerciseDuration = exDuration;
@@ -35,6 +42,13 @@ public class AvailableTimeFinder {
         this.sleepTime = sleepTime;
     }
 
+    /**
+     * Find the duration between two {@link DateTime}s
+     *
+     * @param db1 first imputed {@link DateTime}
+     * @param db2 second imputed {@link DateTime}
+     * @return the amount of time between the times (minutes)
+     */
     private static long getDurationBetweenEvents(DateTime db1, DateTime db2) {
         LocalDateTime ldt1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db1.getValue()), ZoneId.systemDefault());
         LocalDateTime ldt2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(db2.getValue()), ZoneId.systemDefault());
@@ -46,8 +60,17 @@ public class AvailableTimeFinder {
         return info;
     }
 
+    /**
+     * Find available time slots in the user's schedule of events ({@link #allEvents}) that are
+     * longer than the selected {@link #exerciseDuration} and between the selected {@link #wakeUpTime}
+     * and {@link #sleepTime}.
+     *
+     * @return an instance of {@link RecyclerViewData} that stores the original events in the
+     * original schedule and the determined available time slots.
+     * @see {@link RecyclerViewData}
+     */
     public RecyclerViewData getAvailableSlots() {
-        Log.d("testLogs", exerciseDuration+"");
+        RecyclerViewData eventsAndSlots = new RecyclerViewData();
         if (allEvents.size() != 0)
             if (allEvents.get(0).getStartTimeMilli() - wakeUpTime > exerciseDuration * 60 * 1000)
                 eventsAndSlots.addPossibleEvent(

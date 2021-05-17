@@ -52,27 +52,50 @@ import schedulingBackEnd.AccessTokenGetter;
 import schedulingBackEnd.EventCollector;
 import schedulingBackEnd.ParcelableEvent;
 
+/**
+ * The application's Main Activity. The location where inputs are taken in order to load and display
+ * calendar events.
+ *
+ * @see AppCompatActivity
+ * @author Christopher Walsh
+ * @author Krish Suraparaju
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String APPLICATION_NAME = "Apps For Good Calendar API Testing";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+
+    // Shared Preference name constants
     private static final String SHARED_PREFS = "sharedPrefs";
     private static final String WAKE_HOUR = "wake hour";
     private static final String WAKE_MINUTE = "wake minute";
     private static final String SLEEP_HOUR = "sleep hour";
     private static final String SLEEP_MINUTE = "sleep minute";
     private static final String DURATION = "duration";
+
+    // Request Code constants
     private static final int RQ_CHOOSE_TIMES = 1212;
     private static final int RQ_SIGN_IN = 8787;
+
+
     private GoogleSignInAccount account = null;
 
+    /**
+     * The user's Google Calendar. Collected by {@link #onActivityResult(int, int, Intent)}
+     */
     private Calendar calendar = null;
+
+    // Fields loaded by shared preferences.
     private static int wakeHour;
     private static int wakeMin;
     private static int sleepHour;
     private static int sleepMin;
     private static int workOutDuration;
 
-
+    /**
+     * Starts the sign in process by opening the activity {@link SignIn}. The user's google account is
+     * collected in {@link #onActivityResult(int, int, Intent)}.
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -87,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Saves data selected in the activity to {@link SharedPreferences}.
+     */
     public void saveData(){
         TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
         TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
@@ -109,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Loads data from {@link SharedPreferences}.
+     */
     public void loadData(){
 
         SharedPreferences sh = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
@@ -122,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
         workOutDuration = sh.getInt(DURATION,0);
     }
 
+    /**
+     * Updates the fields in the activity with data loaded from {@link SharedPreferences}.
+     */
     public void updateFields(){
         TimePicker wakeUpPicker = findViewById(R.id.inputWakeUpTime);
         TimePicker sleepPicker = findViewById(R.id.inputSleepTime);
@@ -136,17 +168,11 @@ public class MainActivity extends AppCompatActivity {
         durationField.setText(String.valueOf(workOutDuration));
     }
 
-/**
-    public void  loadTimer(TimePicker timepicker) {
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-        timepicker.setHour(prefs.getInt("hour", 1));
-        timepicker.setMinute(prefs.getInt("minute", 01));
-    }
-    **/
-
 
     /**
-     * Runs on {} button press, displays the next event on the user's calendar in the TextView above.
+     * Runs on "Continue" button press, collects events form the user's google calendar one the
+     * specified day. Starts {@link CalViewActivity} to display these events and possible exercise
+     * times. The times selected in {@link CalViewActivity} are collected by {@link #onActivityResult(int, int, Intent)}.
      *
      * @param v
      * @throws IOException
@@ -221,12 +247,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Contacts Google servers to exchange the user's authorization code (extracted from their GoogleSignInAccount)
+     * Contacts Google servers to exchange the user's authorization code (extracted from their {@link GoogleSignInAccount})
      * for the user's access token.
      *
      * @param authCode
      * @param clientSecret
      * @return an access token that encodes the credentials necessary to access a user's google Calendar
+     * @see GoogleSignInAccount
+     * @see OkHttpClient
      */
     public String getToken(String authCode, String clientSecret) {
         OkHttpClient client = new OkHttpClient();
@@ -250,6 +278,10 @@ public class MainActivity extends AppCompatActivity {
         return accessToken;
     }
 
+    /**
+     * Gets the wake up time from the corresponding {@link TimePicker}.
+     * @return wake up time in milliseconds since 00:00:00
+     */
     private long collectWakeUpTime() {
         TimePicker picker = findViewById(R.id.inputWakeUpTime);
         int hour = picker.getHour();
@@ -257,6 +289,10 @@ public class MainActivity extends AppCompatActivity {
         return hour * (60L * 60 * 1000) + min * (60L * 1000);
     }
 
+    /**
+     * Gets the sleep time from the corresponding {@link TimePicker}.
+     * @return sleep time in milliseconds since 00:00:00
+     */
     private long collectSleepTime() {
         TimePicker picker = findViewById(R.id.inputSleepTime);
         int hour = picker.getHour();
@@ -264,6 +300,12 @@ public class MainActivity extends AppCompatActivity {
         return hour * (60L * 60 * 1000) + min * (60L * 1000);
     }
 
+    /**
+     * Collects the date from the corresponding {@link DatePicker} and finds the number of
+     * milliseconds between that dates start time (00:00:00) and the epoch (in the system's default
+     * time zone).
+     * @return the number of milliseconds between the 00:00:00 on the selected date and the epoch
+     */
     private long collectDateMillis() {
         DatePicker picker = findViewById(R.id.datePicker);
 
@@ -289,8 +331,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Collects the results of activities started by StartActivityForResult() in this activity. This currently collects the user's
-     * GoogleSignInAccount from the SignIn activity started in this activity's OnCreate().
+     * Collects the results of activities started by {@link AppCompatActivity#startActivityForResult(Intent, int)}
+     * in this activity. If request code equals {@link #RQ_SIGN_IN} this collects the user's
+     * GoogleSignInAccount from the SignIn activity started in {@link #onCreate(Bundle)}. If request
+     * code equals {@link #RQ_CHOOSE_TIMES} this collects the events selected in the {@link CalViewActivity}
+     * started by {@link #OpenCalView(View)} and adds them to the user's {@link #calendar}.
      *
      * @param requestCode
      * @param resultCode
@@ -322,6 +367,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds the specified event to the user's google calendar {@link #calendar}.
+     * @param event the specified event to be added.
+     * @throws InterruptedException
+     */
     public void addEventToCalendar(ModifiedEvent event) throws InterruptedException {
         Log.d("TestLog", "Adding and event");
         Event calendarEvent = new Event()
