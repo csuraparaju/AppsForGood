@@ -9,6 +9,8 @@ import java.io.IOException;
 /**
  * A Runnable class that allows Google calendar reading requests to take place on a thread separate from the main thread
  * as Android does not permit web requests on main threads.
+ *
+ * @see Runnable
  */
 public class EventCollector implements Runnable{
     public static final int START_END = 0;
@@ -23,6 +25,10 @@ public class EventCollector implements Runnable{
 
     private Events events = null;
 
+    /**
+     * The builder for {@link EventCollector}, allowing event collection by start date and number of
+     * events or between two dates.
+     */
     public static class Builder{
         public EventCollector collector;
 
@@ -43,7 +49,7 @@ public class EventCollector implements Runnable{
     }
 
     /**
-     * The main processes of this class
+     * The main processes of this class, collects events from the user's calendar.
      */
     public void run() {
         try {
@@ -74,12 +80,10 @@ public class EventCollector implements Runnable{
 
     /**
      * Gets the results of run() in the form of an Events object
-     * @return a list of events on the user's calendar generated using the parameters determined in the constructor
+     * @return a list of events on the user's calendar generated using the parameters determined in
+     * the builder
      */
-    public Events getResults() throws InterruptedException {
-        /*while(events == null){ // waiting for the results of run()
-            Thread.currentThread().sleep(500);
-        }*/
+    public Events getResults(){
         return events;
     }
 }

@@ -19,12 +19,22 @@ import com.google.android.gms.tasks.Task;
 
 /**
  * The activity that allows the user to sign-in to their Google account, opened upon app start if no Google account is found.
+ * @author Christopher Walsh
  */
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_GOOGLE_SIGN_IN = 6767;
+
+    /**
+     * The {@link GoogleSignInClient} that is used to sign in with this activity
+     */
     private GoogleSignInClient mGoogleSignInClient;
 
+    /**
+     * Run on activity start to specify {@link GoogleSignInOptions} and generate the {@link #mGoogleSignInClient}.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +52,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     /**
-     * Runs on-click of the sign-in button to run SignIn()
+     * Runs on Sign In button click to run {@link #signIn}.
      * @param v
      */
     public void onClick(View v) {
@@ -62,7 +72,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     /**
-     * Collects the result of the google sign in activity
+     * Collects the result of the Google sign in activity
      * @param requestCode
      * @param resultCode
      * @param data
@@ -77,9 +87,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     /**
-     * Parses the result of the google sign in activity to set the result of the SignIn activity to an intent containing
-     * a GoogleSignInAccount.
+     * Parses the result of the google sign in activity to set the result of this {@link SignIn} activity to an intent containing
+     * a {@link GoogleSignInAccount}. This intent is then returned to the {@link MainActivity} that
+     * started this activity.
      * @param completedTask data from the google SignIn activity
+     * @see MainActivity#onActivityResult(int, int, Intent)
      */
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {

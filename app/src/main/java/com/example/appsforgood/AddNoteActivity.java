@@ -1,9 +1,7 @@
 package com.example.appsforgood;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +19,12 @@ import java.time.ZoneId;
 
 import schedulingBackEnd.ParcelableEvent;
 
+/**
+ * Handles the interface that allows the user to add a new exercise event to their schedule during
+ * an available time slot provided by the activities parent {@link CalViewActivity}.
+ *
+ * @see AppCompatActivity
+ */
 public class AddNoteActivity extends AppCompatActivity {
     private EditText titlePicker;
     private TimePicker timePicker;
@@ -29,6 +33,12 @@ public class AddNoteActivity extends AppCompatActivity {
     private int allowedDuration;
     private int index;
 
+    /**
+     * Run on activity start to set the title and content of this activity. This method also creates
+     * this events menu.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +69,12 @@ public class AddNoteActivity extends AppCompatActivity {
         textViewTimeConstraints.setText(allowedTimes.getStartAsString()+" and "+allowedTimes.getEndAsString());
     }
 
+    /**
+     * Run on save button press to collect the imputed data from this activity and return a new
+     * event to the {@link CalViewActivity} that started this activity.
+     *
+     * @see CalViewActivity#onActivityResult(int, int, Intent)
+     */
     private void saveEvent(){
         String title = titlePicker.getText().toString();
         int hour = timePicker.getHour();
@@ -86,6 +102,11 @@ public class AddNoteActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds a save button to the created menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -93,6 +114,11 @@ public class AddNoteActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Handles clicks on menu buttons, namely the save button.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
