@@ -15,7 +15,8 @@ import schedulingBackEnd.ParcelableEvent;
  * is mainly used to take in data regarding an Event (such as name, start time, and end time) and store it in an easily
  * accessible format.
  *
- * @Authors: Christopher Walsh and Krish Suraparaju
+ * @author Christopher Walsh
+ * @author Krish Suraparaju
  */
 public class ModifiedEvent {
     public String name;
