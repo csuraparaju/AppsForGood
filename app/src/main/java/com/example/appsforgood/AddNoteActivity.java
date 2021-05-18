@@ -57,6 +57,8 @@ public class AddNoteActivity extends AppCompatActivity {
         int startHour = instant.atZone(ZoneId.systemDefault()).getHour();
         int startMin = instant.atZone(ZoneId.systemDefault()).getMinute();
 
+        titlePicker.setText("New Exercise Event");
+
         timePicker.setHour(startHour);
         timePicker.setMinute(startMin);
 

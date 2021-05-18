@@ -24,7 +24,7 @@ public class ModifiedEvent {
     private long endTimeMilli;
 
     /**
-     * Overloaded constructor used to initialize a {@link com.example.appsforgood.ModifiedEvent} object when Google Calendar's
+     * Overloaded constructor used to initialize a {@link ModifiedEvent} object when Google Calendar's
      * Event object is not passed in.
      * @param name - string variable to assign the name of the event.
      * @param startTimeMilli - long variable to store the millisecond time since Unix Epoch for the event's start time
@@ -37,7 +37,7 @@ public class ModifiedEvent {
     }
 
     /**
-     * Overloaded constructor used to initialize a {@link com.example.appsforgood.ModifiedEvent} object using data from
+     * Overloaded constructor used to initialize a {@link ModifiedEvent} object using data from
      * Google Calendar's Event object.
      * @param e - Google Calendar Event object.
      */
@@ -48,9 +48,9 @@ public class ModifiedEvent {
     }
 
     /**
-     * Overloaded constructor used to initialize a {@link com.example.appsforgood.ModifiedEvent} object using data
-     * from an {@link schedulingBackEnd.ParcelableEvent} object.
-     * @param e - instance of {@link schedulingBackEnd.ParcelableEvent} object being passed in
+     * Overloaded constructor used to initialize a {@link ModifiedEvent} object using data
+     * from an {@link ParcelableEvent} object.
+     * @param e - instance of {@link ParcelableEvent} object being passed in
      */
     public ModifiedEvent(ParcelableEvent e) {
         name = e.getId();
@@ -83,7 +83,7 @@ public class ModifiedEvent {
     }
 
     /**
-     * Getter method to access the object's start time as a formatted string using the {@link com.example.appsforgood.ModifiedEvent#milliToTimeString(long)}
+     * Getter method to access the object's start time as a formatted string using the {@link #milliToTimeString(long)}
      * @return startTimeMilli - string value to store formatted start time
      */
     public String getStartAsString() {
@@ -107,10 +107,10 @@ public class ModifiedEvent {
     }
 
     /**
-     * Method to convert the current object ({@link com.example.appsforgood.ModifiedEvent}) to a
-     * {@link schedulingBackEnd.ParcelableEvent} object.
-     * @return ParcelableEvent - newly created {@link schedulingBackEnd.ParcelableEvent} object with data from the
-     * {@link com.example.appsforgood.ModifiedEvent}
+     * Method to convert the current object ({@link ModifiedEvent}) to a
+     * {@link ParcelableEvent} object.
+     * @return ParcelableEvent - newly created {@link ParcelableEvent} object with data from the
+     * {@link ModifiedEvent}
      * object.
      */
     public ParcelableEvent toParcelableEvent(){
@@ -141,10 +141,10 @@ public class ModifiedEvent {
 
     /**
      * Helper method to convert a list of {@link schedulingBackEnd.ParcelableEvent} objects into a list containing
-     * {@link com.example.appsforgood.ModifiedEvent} objects. The given List is traversed and a new "out" List is populated with
-     * {@link com.example.appsforgood.ModifiedEvent} objects using the {@link com.example.appsforgood.ModifiedEvent#ModifiedEvent(ParcelableEvent)}
+     * {@link ModifiedEvent} objects. The given List is traversed and a new "out" List is populated with
+     * {@link ModifiedEvent} objects using the {@link #ModifiedEvent(ParcelableEvent)}
      * constructor.
-     * @param events - List containing {@link com.example.appsforgood.ModifiedEvent} objects.
+     * @param events - List containing {@link ModifiedEvent} objects.
      * @return
      */
     public static List<ModifiedEvent> convertParcelableList(List<ParcelableEvent> events){
@@ -158,9 +158,9 @@ public class ModifiedEvent {
 
     /**
      * Helper method to convert a list of {@link com.example.appsforgood.ModifiedEvent} objects into a list containing
-     * {@link schedulingBackEnd.ParcelableEvent} objects. The given List is traversed and a new "out" List is populated with
-     * {@link schedulingBackEnd.ParcelableEvent} objects using the {@link com.example.appsforgood.ModifiedEvent#toParcelableEvent()} method.
-     * @param events - List containing {@link com.example.appsforgood.ModifiedEvent} objects.
+     * {@link ParcelableEvent} objects. The given List is traversed and a new "out" List is populated with
+     * {@link ParcelableEvent} objects using the {@link #toParcelableEvent()} method.
+     * @param events - List containing {@link ModifiedEvent} objects.
      * @return
      */
 
@@ -175,10 +175,10 @@ public class ModifiedEvent {
 
     /**
      * Helper method to convert a list of Google Calendar's Event objects into a list containing
-     * {@link com.example.appsforgood.ModifiedEvent} objects. The given List is traversed and a new "out" List is populated with
-     * {@link com.example.appsforgood.ModifiedEvent} objects using the {@link com.example.appsforgood.ModifiedEvent#ModifiedEvent(Event)}
+     * {@link ModifiedEvent} objects. The given List is traversed and a new "out" List is populated with
+     * {@link ModifiedEvent} objects using the {@link #ModifiedEvent(Event)}
      *      * constructor.
-     * @param events - List containing {@link com.example.appsforgood.ModifiedEvent} objects.
+     * @param events - List containing {@link ModifiedEvent} objects.
      * @return
      */
     public static List<ModifiedEvent> convertEventList(List<Event> events){

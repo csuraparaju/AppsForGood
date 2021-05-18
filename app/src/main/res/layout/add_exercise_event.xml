@@ -11,7 +11,7 @@
         android:id="@+id/edit_text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nex Exercise Event"
+        android:hint="New Exercise Event"
         android:inputType="text"
         tools:ignore="MissingConstraints"
         android:layout_marginBottom="30dp"/>

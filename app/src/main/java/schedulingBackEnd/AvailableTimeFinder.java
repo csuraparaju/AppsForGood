@@ -100,7 +100,7 @@ public class AvailableTimeFinder {
 
             long timeBetween = getDurationBetweenEvents(currEventEndTime, nextEventStartTime);
 
-            if (timeBetween > exerciseDuration) {
+            if (timeBetween >= exerciseDuration) {
                 ModifiedEvent availableEvent = new ModifiedEvent("Possible workout time",
                         currEventEndTime.getValue(),
                         nextEventStartTime.getValue());
